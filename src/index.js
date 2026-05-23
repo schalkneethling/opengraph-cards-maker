@@ -20,6 +20,72 @@ export const defaultTheme = {
   border: "#d1d5db",
 };
 
+export const playwrightChromiumInstallCommand = "pnpm exec playwright install chromium";
+export const playwrightChromiumCiInstallCommand =
+  "pnpm exec playwright install --with-deps chromium";
+
+const chromiumMissingHints = [
+  "Install the Playwright Chromium browser before generating cards:",
+  `  ${playwrightChromiumInstallCommand}`,
+  "For Ubuntu CI runners that also need system dependencies:",
+  `  ${playwrightChromiumCiInstallCommand}`,
+  "",
+  "CI hints:",
+  "- GitHub Actions: cache ~/.cache/ms-playwright and install chromium in an explicit setup step.",
+  "- Netlify/Vercel: run the install command before your build and set PLAYWRIGHT_BROWSERS_PATH=0 when you want the browser stored with project dependencies.",
+];
+
+export function createMissingChromiumError(cause) {
+  const error = new Error(
+    [
+      "Playwright Chromium is not available, so Open Graph cards cannot be rendered.",
+      "",
+      ...chromiumMissingHints,
+    ].join("\n"),
+    { cause },
+  );
+  error.name = "MissingPlaywrightChromiumError";
+  return error;
+}
+
+export function isMissingChromiumError(error) {
+  const message = String(error?.message ?? "");
+
+  return (
+    message.includes("Executable doesn't exist") ||
+    message.includes("Looks like Playwright") ||
+    (message.includes("playwright install") && message.includes("chromium"))
+  );
+}
+
+async function assertChromiumAvailable(launchOptions) {
+  if (launchOptions?.channel) {
+    return;
+  }
+
+  const executablePath = launchOptions?.executablePath ?? chromium.executablePath();
+
+  try {
+    await fs.access(executablePath);
+  } catch (error) {
+    throw createMissingChromiumError(error);
+  }
+}
+
+async function launchChromium(launchOptions) {
+  await assertChromiumAvailable(launchOptions);
+
+  try {
+    return await chromium.launch(launchOptions);
+  } catch (error) {
+    if (isMissingChromiumError(error)) {
+      throw createMissingChromiumError(error);
+    }
+
+    throw error;
+  }
+}
+
 export function escapeHTML(value = "") {
   return String(value)
     .replace(/&/g, "&amp;")
@@ -382,7 +448,7 @@ export async function generateOpenGraphCards(options) {
     await fs.rm(outputDir, { recursive: true, force: true });
   }
 
-  const browser = await chromium.launch(options.launchOptions);
+  const browser = await launchChromium(options.launchOptions);
   const page = await browser.newPage({
     viewport: size,
     deviceScaleFactor: options.deviceScaleFactor ?? 1,

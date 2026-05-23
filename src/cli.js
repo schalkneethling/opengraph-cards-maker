@@ -1,16 +1,33 @@
 #!/usr/bin/env node
 import { readConfig } from "./config.js";
-import { generateOpenGraphCards } from "./index.js";
+import {
+  generateOpenGraphCards,
+  playwrightChromiumCiInstallCommand,
+  playwrightChromiumInstallCommand,
+} from "./index.js";
 import { startPreviewServer } from "./preview.js";
 
 async function main() {
-  const [commandOrConfigPath, maybeConfigPath] = process.argv.slice(2);
+  const [commandOrConfigPath, maybeConfigPath, ...flags] = process.argv.slice(2);
   const isPreviewCommand = commandOrConfigPath === "preview";
+  const isInstallBrowsersCommand = commandOrConfigPath === "install-browsers";
   const configPath = isPreviewCommand ? maybeConfigPath : commandOrConfigPath;
+
+  if (isInstallBrowsersCommand) {
+    if (maybeConfigPath === "--ci" || flags.includes("--ci")) {
+      console.log("Install Playwright Chromium and system dependencies for Ubuntu CI:");
+      console.log(`  ${playwrightChromiumCiInstallCommand}`);
+    } else {
+      console.log("Install the Playwright Chromium browser before generating cards:");
+      console.log(`  ${playwrightChromiumInstallCommand}`);
+    }
+    return;
+  }
 
   if (!configPath) {
     console.error("Usage: og-cards <config.json>");
     console.error("       og-cards preview <config.json>");
+    console.error("       og-cards install-browsers [--ci]");
     process.exitCode = 1;
     return;
   }

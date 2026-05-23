@@ -24,6 +24,18 @@ Playwright also needs a browser available in your environment:
 pnpm exec playwright install chromium
 ```
 
+The package renders HTML/CSS to PNG with Playwright, so Chromium must be
+installed explicitly anywhere cards are generated, including CI and hosting
+builds. Keep that setup as an explicit CI step instead of relying on hidden
+install hooks during `generateOpenGraphCards()`.
+
+For a quick reminder in any project:
+
+```bash
+og-cards install-browsers
+og-cards install-browsers --ci
+```
+
 ## JavaScript API
 
 ```js
@@ -48,6 +60,19 @@ await generateOpenGraphCards({
 ```
 
 This writes `public/og/hello-world.png`.
+
+In constrained CI environments, pass Playwright launch options through
+`launchOptions`:
+
+```js
+await generateOpenGraphCards({
+  outputDir: "public/og",
+  launchOptions: {
+    args: ["--no-sandbox"],
+  },
+  cards,
+});
+```
 
 You can also build cards directly from files with YAML frontmatter:
 
@@ -142,6 +167,96 @@ layouts, pass a `templates` map or a `createCard` adapter in JavaScript.
 
 - [Astro](docs/astro.md)
 - [11ty](docs/11ty.md)
+
+## CI and Hosting
+
+Install Chromium as part of your build setup before running the generator.
+Do not rely on package lifecycle scripts to download browsers during install.
+A small project script keeps local, CI, and hosting setup consistent:
+
+```json
+{
+  "scripts": {
+    "setup:playwright": "playwright install chromium",
+    "setup:playwright:ci": "playwright install --with-deps chromium",
+    "build": "pnpm run generate:og && astro build",
+    "generate:og": "node scripts/generate-og-cards.mjs"
+  }
+}
+```
+
+### GitHub Actions
+
+Cache Playwright's browser directory, install dependencies with scripts
+disabled, then install Chromium explicitly. Pin actions to a commit SHA if your
+project requires stronger supply-chain controls.
+
+```yaml
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install Playwright Chromium
+        run: pnpm run setup:playwright:ci
+
+      - name: Build
+        run: pnpm run build
+```
+
+### Netlify
+
+Set `PLAYWRIGHT_BROWSERS_PATH=0` so Netlify stores the browser with the project
+dependencies it caches, then run the explicit setup script before the build:
+
+```toml
+[build]
+  command = "pnpm run setup:playwright && pnpm run build"
+  publish = "dist"
+
+[build.environment]
+  PLAYWRIGHT_BROWSERS_PATH = "0"
+```
+
+### Vercel and Other CI
+
+Use the same pattern: run the setup script before your framework build command.
+Set `PLAYWRIGHT_BROWSERS_PATH=0` when browser downloads should live with
+project dependencies:
+
+```bash
+pnpm run setup:playwright && pnpm run build
+```
 
 ## General Documentation
 
