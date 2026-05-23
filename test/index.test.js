@@ -4,10 +4,14 @@ import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   createCardsFromContentFiles,
+  createMissingChromiumError,
   escapeHTML,
   fileToDataUrl,
   getContentFiles,
+  isMissingChromiumError,
+  playwrightChromiumCiInstallCommand,
   parseFrontmatter,
+  playwrightChromiumInstallCommand,
   renderCardDocument,
   resolveCardImages,
   slugify,
@@ -140,5 +144,27 @@ describe("image handling and rendering", () => {
     expect(html).toContain("Launch &quot;soon&quot; &amp; safely");
     expect(html).toContain('<span class="badge">Beta</span>');
     expect(html).toContain("<strong>Ready</strong>");
+  });
+});
+
+describe("Playwright browser diagnostics", () => {
+  it("recognizes the common missing-browser launch error", () => {
+    expect(
+      isMissingChromiumError(
+        new Error(
+          "browserType.launch: Executable doesn't exist at /Users/example/Library/Caches/ms-playwright/chromium/chrome-mac/Chromium.app/Contents/MacOS/Chromium",
+        ),
+      ),
+    ).toBe(true);
+  });
+
+  it("creates a short actionable install error", () => {
+    const error = createMissingChromiumError(new Error("Executable doesn't exist"));
+
+    expect(error.name).toBe("MissingPlaywrightChromiumError");
+    expect(error.message).toContain("Playwright Chromium is not available");
+    expect(error.message).toContain(playwrightChromiumInstallCommand);
+    expect(error.message).toContain(playwrightChromiumCiInstallCommand);
+    expect(error.message).toContain("GitHub Actions");
   });
 });

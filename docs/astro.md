@@ -15,6 +15,9 @@ pnpm add -D opengraph-cards-maker
 pnpm exec playwright install chromium
 ```
 
+Chromium must also be installed in CI or hosting builds before the generator
+runs. Keep that as an explicit setup step in your workflow or build command.
+
 ## package.json
 
 Run the generator before Astro builds:
@@ -23,10 +26,55 @@ Run the generator before Astro builds:
 {
   "scripts": {
     "dev": "astro dev",
+    "setup:playwright": "playwright install chromium",
+    "setup:playwright:ci": "playwright install --with-deps chromium",
     "build": "pnpm run generate:og && astro build",
     "generate:og": "node scripts/generate-og-cards.mjs"
   }
 }
+```
+
+Avoid hiding browser installation in `prebuild` or in the card generation
+script. For hosting providers, install Chromium in CI first, then run this
+`build` script.
+
+For Netlify, set `PLAYWRIGHT_BROWSERS_PATH=0` and use a build command like:
+
+```toml
+[build]
+  command = "pnpm run setup:playwright && pnpm run build"
+  publish = "dist"
+
+[build.environment]
+  PLAYWRIGHT_BROWSERS_PATH = "0"
+```
+
+For GitHub Actions, cache `~/.cache/ms-playwright` and run the CI setup script
+before the build. Use the tagged action for readability, or pin it to a commit
+SHA in stricter projects:
+
+```yaml
+- name: Cache Playwright browsers
+  uses: actions/cache@v4
+  with:
+    path: ~/.cache/ms-playwright
+    key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+- name: Install Playwright Chromium
+  run: pnpm run setup:playwright:ci
+
+- name: Build Astro site
+  run: pnpm run build
+```
+
+Pinned variant:
+
+```yaml
+- name: Cache Playwright browsers
+  uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+  with:
+    path: ~/.cache/ms-playwright
+    key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
 ```
 
 ## Generated Output
@@ -73,7 +121,7 @@ The helper parses YAML frontmatter and records skipped files on `cards.skipped`.
 
 Pass the generated image path into your base layout:
 
-```astro
+```javascript
 ---
 const { pageTitle, pageDescription, socialImage } = Astro.props;
 const fallbackSocialImage = new URL("/social-graph.png", Astro.site);
@@ -91,7 +139,7 @@ const socialImageUrl = socialImage
 
 For posts:
 
-```astro
+```javascript
 ---
 const { post } = Astro.props;
 const socialImage = `/og/posts/${post.id}.png`;
