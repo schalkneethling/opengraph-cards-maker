@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Open Graph Cards Preview</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #161616;
+        --muted: #62625f;
+        --line: #d8d4ca;
+        --panel: #f4f1e9;
+        --paper: #fffdf8;
+        --accent: #0f766e;
+        --accent-ink: #073f3a;
+        --danger: #9f1239;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-block-size: 100vh;
+        margin: 0;
+        background: var(--panel);
+        color: var(--ink);
+        font-family:
+          Avenir Next,
+          Avenir,
+          ui-sans-serif,
+          system-ui,
+          sans-serif;
+      }
+
+      button,
+      select {
+        font: inherit;
+      }
+
+      .shell {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        min-block-size: 100vh;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        background: var(--paper);
+        border-block-end: 1px solid var(--line);
+      }
+
+      .brand {
+        display: grid;
+        gap: 0.15rem;
+        min-inline-size: 0;
+      }
+
+      .brand strong {
+        font-size: 0.95rem;
+        letter-spacing: 0;
+      }
+
+      .brand span {
+        overflow: hidden;
+        color: var(--muted);
+        font-size: 0.8rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .controls {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .controls label {
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+
+      select {
+        min-inline-size: min(24rem, 48vw);
+        padding: 0.55rem 0.7rem;
+        color: var(--ink);
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 0.375rem;
+      }
+
+      .stage {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 18rem;
+        gap: 1.25rem;
+        align-items: start;
+        padding: 1.25rem;
+      }
+
+      .preview-wrap {
+        display: grid;
+        place-items: center;
+        min-block-size: calc(100vh - 6rem);
+        padding: 1rem;
+      }
+
+      .frame {
+        inline-size: min(100%, 1200px);
+        aspect-ratio: 1200 / 630;
+        overflow: hidden;
+        background: white;
+        border: 1px solid var(--line);
+        box-shadow: 0 1.25rem 3rem rgb(50 46 36 / 0.16);
+      }
+
+      iframe {
+        display: block;
+        inline-size: 1200px;
+        block-size: 630px;
+        border: 0;
+        transform-origin: top left;
+      }
+
+      .details {
+        display: grid;
+        gap: 0.9rem;
+        padding: 1rem;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 0.5rem;
+      }
+
+      .details h2 {
+        margin: 0;
+        font-size: 0.9rem;
+      }
+
+      .detail {
+        display: grid;
+        gap: 0.25rem;
+      }
+
+      .detail span {
+        color: var(--muted);
+        font-size: 0.74rem;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .detail code {
+        overflow-wrap: anywhere;
+        color: var(--accent-ink);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.82rem;
+      }
+
+      .error {
+        max-inline-size: 52rem;
+        padding: 1rem;
+        color: var(--danger);
+        background: #fff1f2;
+        border: 1px solid #fecdd3;
+        border-radius: 0.5rem;
+      }
+
+      @media (max-width: 860px) {
+        .topbar,
+        .controls,
+        .stage {
+          display: grid;
+        }
+
+        .stage {
+          grid-template-columns: 1fr;
+        }
+
+        select {
+          min-inline-size: 0;
+          inline-size: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <strong>Open Graph Cards Preview</strong>
+          <span id="config-path">Loading config...</span>
+        </div>
+        <div class="controls">
+          <label for="card-select">Card</label>
+          <select id="card-select"></select>
+        </div>
+      </header>
+
+      <section class="stage">
+        <div class="preview-wrap">
+          <div class="frame" id="frame">
+            <iframe id="preview" title="Selected Open Graph card preview"></iframe>
+          </div>
+          <div class="error" id="error" hidden></div>
+        </div>
+        <aside class="details">
+          <h2>Selected Card</h2>
+          <div class="detail">
+            <span>ID</span>
+            <code id="card-id"></code>
+          </div>
+          <div class="detail">
+            <span>Title</span>
+            <code id="card-title"></code>
+          </div>
+          <div class="detail">
+            <span>Output filename</span>
+            <code id="card-filename"></code>
+          </div>
+          <div class="detail">
+            <span>Would generate</span>
+            <code id="card-output"></code>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <script type="module">
+      const select = document.querySelector("#card-select");
+      const iframe = document.querySelector("#preview");
+      const frame = document.querySelector("#frame");
+      const error = document.querySelector("#error");
+      const fields = {
+        configPath: document.querySelector("#config-path"),
+        id: document.querySelector("#card-id"),
+        title: document.querySelector("#card-title"),
+        filename: document.querySelector("#card-filename"),
+        output: document.querySelector("#card-output"),
+      };
+
+      let cards = [];
+
+      function scalePreview() {
+        const scale = frame.clientWidth / 1200;
+        iframe.style.transform = `scale(${scale})`;
+      }
+
+      function showCard(index) {
+        const card = cards[index];
+
+        if (!card) {
+          return;
+        }
+
+        iframe.srcdoc = card.html;
+        fields.id.textContent = card.id;
+        fields.title.textContent = card.title;
+        fields.filename.textContent = card.filename;
+        fields.output.textContent = card.outputPath;
+      }
+
+      async function loadPreview() {
+        const response = await fetch("/__og-cards/preview-data");
+
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}));
+          throw new Error(data.error || "Unable to load preview data.");
+        }
+
+        const data = await response.json();
+        cards = data.cards;
+        fields.configPath.textContent = data.configPath;
+        select.replaceChildren(
+          ...cards.map((card, index) => {
+            const option = document.createElement("option");
+            option.value = String(index);
+            option.textContent = card.title || card.id;
+            return option;
+          }),
+        );
+        showCard(Number(select.value || 0));
+      }
+
+      select.addEventListener("change", () => showCard(Number(select.value)));
+      window.addEventListener("resize", scalePreview);
+      iframe.addEventListener("load", scalePreview);
+
+      loadPreview().catch((loadError) => {
+        frame.hidden = true;
+        error.hidden = false;
+        error.textContent = loadError.message;
+      });
+    </script>
+  </body>
+</html>

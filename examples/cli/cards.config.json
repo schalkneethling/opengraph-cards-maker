@@ -1,0 +1,189 @@
+{
+  "outputDir": "./dist/og",
+  "cleanOutputDir": true,
+  "theme": {
+    "accent": "#2563eb",
+    "accentBackground": "#eff6ff",
+    "border": "#bfdbfe"
+  },
+  "cards": [
+    {
+      "id": "product-launch",
+      "eyebrow": "example.com",
+      "title": "Introducing the spring release",
+      "description": "A compact overview of the improvements shipping this month.",
+      "badge": "Release notes",
+      "status": {
+        "label": "Published",
+        "detail": "May 2026",
+        "icon": "./assets/icon.svg"
+      },
+      "meta": [
+        {
+          "label": "Reading time",
+          "value": "4 min"
+        },
+        {
+          "label": "Category",
+          "value": "Product"
+        }
+      ]
+    },
+    {
+      "id": "integration-guide",
+      "eyebrow": "docs.example.com",
+      "title": "Connect your project in under ten minutes",
+      "description": "A short setup guide for generating Open Graph cards during a static-site build.",
+      "badge": "Guide",
+      "support": [
+        {
+          "name": "Astro",
+          "detail": "Supported",
+          "supported": true,
+          "icon": "./assets/icon.svg"
+        },
+        {
+          "name": "Eleventy",
+          "detail": "Supported",
+          "supported": true
+        },
+        {
+          "name": "Custom build",
+          "detail": "Supported",
+          "supported": true
+        }
+      ]
+    },
+    {
+      "id": "background-feature",
+      "eyebrow": "studio.example.com",
+      "title": "A visual campaign card with a reusable background",
+      "description": "Use background.src to bring launch artwork, editorial imagery, or branded visuals into a generated card.",
+      "background": {
+        "src": "./assets/background-end.png"
+      },
+      "contentAlign": "align-start",
+      "theme": {
+        "background": "#020617",
+        "foreground": "#f8fafc",
+        "muted": "#dbeafe",
+        "accent": "#f97316",
+        "accentBackground": "#111827",
+        "border": "#60a5fa"
+      },
+      "meta": [
+        {
+          "label": "Channel",
+          "value": "Social"
+        },
+        {
+          "label": "Format",
+          "value": "1200 x 630"
+        }
+      ]
+    },
+    {
+      "id": "release-health",
+      "eyebrow": "status.example.com",
+      "title": "Everything needed for the release is ready",
+      "description": "Combine a status block, badge, and compact metadata for operational updates.",
+      "badge": "Stable",
+      "status": {
+        "label": "Ready",
+        "detail": "All checks passed",
+        "icon": "./assets/icon.svg"
+      },
+      "theme": {
+        "accent": "#16a34a",
+        "accentBackground": "#f0fdf4",
+        "border": "#bbf7d0"
+      },
+      "meta": [
+        {
+          "label": "Version",
+          "value": "2.4.0"
+        },
+        {
+          "label": "Updated",
+          "value": "Today"
+        },
+        {
+          "label": "Owner",
+          "value": "Platform"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-matrix",
+      "eyebrow": "packages.example.com",
+      "title": "Compare support across runtimes and targets",
+      "description": "Support rows can represent platforms, plans, formats, or feature flags.",
+      "badge": "Compatibility",
+      "theme": {
+        "accent": "#7c3aed",
+        "accentBackground": "#f5f3ff",
+        "border": "#ddd6fe"
+      },
+      "support": [
+        {
+          "name": "Node.js",
+          "detail": "Supported",
+          "supported": true,
+          "icon": "./assets/icon.svg"
+        },
+        {
+          "name": "Deno",
+          "detail": "Planned",
+          "supported": false
+        },
+        {
+          "name": "Browser",
+          "detail": "Supported",
+          "supported": true
+        },
+        {
+          "name": "Workers",
+          "detail": "Researching",
+          "supported": false
+        }
+      ]
+    },
+    {
+      "id": "custom-filename",
+      "filename": "renamed-output-card.png",
+      "eyebrow": "files.example.com",
+      "title": "Override the generated filename when routes need a stable name",
+      "description": "Use filename when the card ID is useful internally but the emitted PNG should follow a different naming convention.",
+      "badge": "Filename override",
+      "theme": {
+        "accent": "#0891b2",
+        "accentBackground": "#ecfeff",
+        "border": "#a5f3fc"
+      }
+    },
+    {
+      "id": "custom-output-path",
+      "outputPath": "./dist/og/custom/nested-output-card.png",
+      "eyebrow": "exports.example.com",
+      "title": "Write a card to a custom output path",
+      "description": "Use outputPath for one-off destinations while other cards continue to use the shared output directory.",
+      "badge": "Custom path",
+      "background": {
+        "src": "./assets/background.png"
+      },
+      "contentAlign": "align-end",
+      "theme": {
+        "background": "#111827",
+        "foreground": "#ffffff",
+        "muted": "#e5e7eb",
+        "accent": "#facc15",
+        "accentBackground": "#1f2937",
+        "border": "#facc15"
+      },
+      "status": {
+        "label": "Exported",
+        "detail": "Nested destination"
+      }
+    }
+  ]
+}

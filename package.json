@@ -1,0 +1,64 @@
+{
+  "name": "@schalkneethling/opengraph-cards-maker",
+  "version": "0.1.0",
+  "description": "Generate custom Open Graph cards for each page of your website.",
+  "keywords": [
+    "astro",
+    "eleventy",
+    "open-graph",
+    "opengraph",
+    "playwright",
+    "social-images"
+  ],
+  "homepage": "https://github.com/schalkneethling/opengraph-cards-maker#readme",
+  "bugs": {
+    "url": "https://github.com/schalkneethling/opengraph-cards-maker/issues"
+  },
+  "license": "MIT",
+  "author": "Schalk Neethling",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/schalkneethling/opengraph-cards-maker.git"
+  },
+  "bin": {
+    "og-cards": "./src/cli.js"
+  },
+  "files": [
+    "src",
+    "docs",
+    "examples/cli/assets",
+    "examples/cli/cards.config.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "check": "node --check src/index.js && node --check src/cli.js && node --check src/config.js && node --check src/preview.js",
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check .",
+    "package:check": "pnpm run check && pnpm test && pnpm exec publint",
+    "preview": "node src/cli.js preview examples/cli/cards.config.json",
+    "sample": "node src/cli.js examples/cli/cards.config.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "playwright": "^1.60.0",
+    "vite": "^8.0.14",
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.51.0",
+    "publint": "^0.3.21",
+    "vitest": "^4.0.14"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@10.0.0"
+}

@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="{{lang}}" style="{{cssVariables}}">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      :root {
+        --spacing-2xs: 0.5rem;
+        --spacing-xs: 0.625rem;
+        --spacing-sm: 0.75rem;
+        --spacing-md: 0.875rem;
+        --spacing-lg: 1.125rem;
+        --spacing-xl: 1.625rem;
+        --spacing-2xl: 1.75rem;
+        --spacing-safe-zone-block: 4rem;
+        --spacing-safe-zone-inline: 4.75rem;
+        --scale-ratio: 1.2;
+
+        --font-body-family:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --font-heading-family: var(--font-body-family);
+
+        --font-body-weight: 400;
+        --font-heading-weight: 600;
+        --font-strong-weight: 720;
+        --font-accent-weight: 650;
+        --font-label-weight: 760;
+
+        --line-height: 1.5;
+        --line-height-tight: 1.2;
+        --line-height-compact: 1.35;
+        --line-height-ui: 1.5;
+
+        --letter-spacing: 0em;
+
+        --typo-xs: 0.64rem;
+        --typo-small: 0.8rem;
+        --typo-default: 1rem;
+
+        --typo-sm: 1.563rem;
+        --typo-m: 1.953rem;
+        --typo-l: 2.441rem;
+        --typo-xl: 3.052rem;
+        --typo-xxl: 3.815rem;
+
+        --font-xs: var(--font-body-weight) var(--typo-xs)/var(--line-height) var(--font-body-family);
+        --font-small: var(--font-body-weight) var(--typo-small)/var(--line-height)
+          var(--font-body-family);
+        --font-default: var(--font-body-weight) var(--typo-default)/var(--line-height)
+          var(--font-body-family);
+
+        --font-sm: var(--font-heading-weight) var(--typo-sm)/var(--line-height)
+          var(--font-heading-family);
+        --font-m: var(--font-heading-weight) var(--typo-m)/var(--line-height)
+          var(--font-heading-family);
+        --font-l: var(--font-heading-weight) var(--typo-l)/var(---line-height-tight)
+          var(--font-heading-family);
+        --font-xl: var(--font-heading-weight) var(--typo-xl)/var(---line-height-tight)
+          var(--font-heading-family);
+        --font-xxl: var(--font-heading-weight) var(--typo-xxl)/var(--line-height-tight)
+          var(--font-heading-family);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        block-size: var(--card-height);
+        inline-size: var(--card-width);
+        margin: 0;
+      }
+
+      body {
+        background-color: var(--card-background);
+        color: var(--card-foreground);
+        display: grid;
+        place-items: center;
+      }
+
+      .card {
+        position: relative;
+        display: grid;
+        grid-template-rows: minmax(0, 1fr) auto auto;
+        gap: var(--spacing-lg);
+        inline-size: var(--card-width);
+        block-size: var(--card-height);
+        overflow: hidden;
+        padding-block: var(--spacing-safe-zone-block);
+        padding-inline: var(--spacing-safe-zone-inline);
+        background-color: var(--card-background);
+      }
+
+      .card::before {
+        background-color: var(--card-accent);
+        block-size: var(--spacing-lg);
+        content: "";
+        inset-block-start: 0;
+        inset-inline: 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      .background {
+        block-size: 100%;
+        inset: 0;
+        inline-size: 100%;
+        object-fit: cover;
+        position: absolute;
+      }
+
+      .background + .content,
+      .content,
+      .summary,
+      .support {
+        position: relative;
+        z-index: 2;
+      }
+
+      .content-align-start .content,
+      .content-align-start .summary,
+      .content-align-start .support,
+      .content-align-end .content,
+      .content-align-end .summary,
+      .content-align-end .support {
+        inline-size: 60%;
+      }
+
+      .content-align-end .content,
+      .content-align-end .summary,
+      .content-align-end .support {
+        justify-self: end;
+      }
+
+      .brand {
+        display: block;
+        inline-size: 5.5rem;
+        block-size: auto;
+        margin-block-end: var(--spacing-lg);
+      }
+
+      .eyebrow {
+        color: var(--card-muted);
+        font: var(--font-default);
+        font-weight: var(--font-accent-weight);
+        letter-spacing: var(--letter-spacing);
+        margin-block: 0 var(--spacing-lg);
+      }
+
+      h1 {
+        font: var(--font-xxl);
+        letter-spacing: var(--letter-spacing);
+        margin: 0;
+        max-inline-size: 61.25rem;
+        overflow-wrap: anywhere;
+      }
+
+      .description {
+        color: var(--card-muted);
+        display: -webkit-box;
+        font: var(--font-sm);
+        font-weight: var(--font-body-weight);
+        letter-spacing: var(--letter-spacing);
+        margin-block: var(--spacing-lg) 0;
+        max-inline-size: 62.5rem;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+      }
+
+      .summary {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: var(--spacing-2xl);
+      }
+
+      .status {
+        align-items: center;
+        display: inline-flex;
+        gap: var(--spacing-xs);
+        max-inline-size: 45rem;
+        padding-block: var(--spacing-md);
+        padding-inline: var(--spacing-lg);
+        background-color: var(--card-accent-background);
+        border: 0.125rem solid var(--card-border);
+        border-radius: 0.5rem;
+      }
+
+      .status-heading {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-md);
+      }
+
+      .status-icon {
+        inline-size: 2.625rem;
+        block-size: 2.625rem;
+        object-fit: contain;
+      }
+
+      .status-label {
+        color: var(--card-accent);
+        font: var(--font-default);
+        font-weight: var(--font-label-weight);
+        letter-spacing: var(--letter-spacing);
+      }
+
+      .status-detail,
+      .badge,
+      .meta-item {
+        color: var(--card-muted);
+        font: var(--font-default);
+        letter-spacing: var(--letter-spacing);
+      }
+
+      .badge,
+      .meta-item,
+      .support-item {
+        background-color: var(--card-background);
+        border: 0.125rem solid var(--card-border);
+        border-radius: 0.5rem;
+      }
+
+      .badge {
+        flex: none;
+        padding-block: var(--spacing-md);
+        padding-inline: var(--spacing-lg);
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
+        margin-block-start: var(--spacing-xl);
+      }
+
+      .meta-item {
+        display: inline-flex;
+        gap: var(--spacing-2xs);
+        padding-block: var(--spacing-xs);
+        padding-inline: var(--spacing-md);
+      }
+
+      .support {
+        display: grid;
+        gap: var(--spacing-md);
+        grid-template-columns: repeat({{supportColumns}}, 1fr);
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .support-item {
+        align-items: center;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        column-gap: var(--spacing-md);
+        min-inline-size: 0;
+        min-block-size: 4.875rem;
+        padding-block: var(--spacing-md);
+        padding-inline: var(--spacing-lg);
+      }
+
+      .support-item.is-muted {
+        opacity: 0.58;
+      }
+
+      .support-item img {
+        grid-row: 1 / span 2;
+        inline-size: 2.75rem;
+        block-size: 2.75rem;
+      }
+
+      .support-name {
+        overflow: hidden;
+        font: var(--font-default);
+        font-weight: var(--font-strong-weight);
+        letter-spacing: var(--letter-spacing);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .support-detail {
+        overflow: hidden;
+        color: var(--card-muted);
+        font: var(--font-small);
+        letter-spacing: var(--letter-spacing);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card {{contentAlignClass}}">
+      {{background}}
+      <section class="content">
+        {{brand}}
+        <h1>{{title}}</h1>
+        {{description}} {{meta}}
+      </section>
+
+      {{summary}} {{support}}
+    </main>
+  </body>
+</html>
