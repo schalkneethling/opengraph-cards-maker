@@ -11,18 +11,25 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version-file: package.json
-          cache: pnpm
+          package-manager-cache: false
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.0.0 --activate
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --ignore-scripts
@@ -31,39 +38,52 @@ jobs:
         run: pnpm run package:check
 
   build:
-    name: Pack
+    name: Pack package
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: test
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version-file: package.json
-          cache: pnpm
+          package-manager-cache: false
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.0.0 --activate
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --ignore-scripts
 
+      - name: Create package directory
+        run: mkdir package
+
       - name: Create package tarball
-        run: npm pack --ignore-scripts
+        run: pnpm pack --pack-destination package
 
       - name: Upload package tarball
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: package-tarball
-          path: "*.tgz"
+          name: npm-package
+          path: package/*.tgz
           if-no-files-found: error
+          retention-days: 7
 
   publish:
-    name: Publish
+    name: Publish to npm
     runs-on: ubuntu-latest
     needs: build
+    timeout-minutes: 10
+    environment: publish
     permissions:
       contents: read
       id-token: write
@@ -73,18 +93,27 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Download package tarball
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
-        with:
-          name: package-tarball
-
       - name: Setup Node.js
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version-file: package.json
+          package-manager-cache: false
           registry-url: https://registry.npmjs.org
 
+      - name: Download package tarball
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: npm-package
+          path: package
+
       - name: Publish to npm
-        run: npm publish *.tgz --ignore-scripts
-        env:
-          NPM_CONFIG_PROVENANCE: true
+        run: |
+          tarball="$(find package -type f -name '*.tgz' -print -quit)"
+
+          if [ -z "$tarball" ]; then
+            echo "No package tarball found in downloaded artifact."
+            find package -maxdepth 3 -type f -print
+            exit 1
+          fi
+
+          npm publish "$(realpath "$tarball")" --ignore-scripts --access public --provenance
