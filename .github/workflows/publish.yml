@@ -21,6 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
+          node-version-file: package.json
           cache: pnpm
 
       - name: Install dependencies
@@ -43,6 +44,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
+          node-version-file: package.json
           cache: pnpm
 
       - name: Install dependencies
@@ -74,6 +76,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
+          node-version-file: package.json
           registry-url: https://registry.npmjs.org
 
       - name: Publish to npm
