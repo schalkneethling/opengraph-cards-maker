@@ -1,6 +1,6 @@
 {
   "name": "@schalkneethling/opengraph-cards-maker",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "description": "Generate custom Open Graph cards for each page of your website.",
   "keywords": [
     "astro",
