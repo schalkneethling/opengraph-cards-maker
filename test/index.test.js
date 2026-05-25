@@ -84,6 +84,7 @@ describe("card creation from content", () => {
         eyebrow: "Docs",
         title: "Ready",
         description: "Good to ship",
+        cardText: null,
         background: undefined,
         meta: [{ label: "Title", value: "Ready" }],
       },
@@ -96,6 +97,88 @@ describe("card creation from content", () => {
       {
         file: path.join(root, "plain.md"),
         reason: "missing frontmatter",
+      },
+    ]);
+  });
+
+  it("uses ogCardText instead of frontmatter title and description", async () => {
+    const root = await makeTempDir();
+    await writeFile(
+      path.join(root, "override.md"),
+      [
+        "---",
+        "title: Page title",
+        "description: Page description",
+        "ogCardText: Custom card copy for sharing.",
+        "---",
+        "",
+      ].join("\n"),
+    );
+    await writeFile(
+      path.join(root, "only-override.md"),
+      "---\nogCardText: Standalone card copy.\n---\n",
+    );
+
+    const cards = await createCardsFromContentFiles({
+      contentDir: root,
+    });
+
+    expect([...cards]).toEqual([
+      {
+        id: "only-override",
+        eyebrow: undefined,
+        title: undefined,
+        description: undefined,
+        cardText: "Standalone card copy.",
+        background: undefined,
+        meta: [],
+      },
+      {
+        id: "override",
+        eyebrow: undefined,
+        title: "Page title",
+        description: "Page description",
+        cardText: "Custom card copy for sharing.",
+        background: undefined,
+        meta: [],
+      },
+    ]);
+    expect(cards.skipped).toEqual([]);
+  });
+
+  it("ignores empty or non-string ogCardText values", async () => {
+    const root = await makeTempDir();
+    await writeFile(
+      path.join(root, "empty.md"),
+      '---\ntitle: Empty\ndescription: Falls back\nogCardText: "   "\n---\n',
+    );
+    await writeFile(
+      path.join(root, "number.md"),
+      "---\ntitle: Number\ndescription: Also falls back\nogCardText: 42\n---\n",
+    );
+
+    const cards = await createCardsFromContentFiles({
+      contentDir: root,
+    });
+
+    expect([...cards]).toEqual([
+      {
+        id: "empty",
+        eyebrow: undefined,
+        title: "Empty",
+        description: "Falls back",
+        cardText: null,
+        background: undefined,
+        meta: [],
+      },
+      {
+        id: "number",
+        eyebrow: undefined,
+        title: "Number",
+        description: "Also falls back",
+        cardText: null,
+        background: undefined,
+        meta: [],
       },
     ]);
   });
@@ -144,6 +227,21 @@ describe("image handling and rendering", () => {
     expect(html).toContain("Launch &quot;soon&quot; &amp; safely");
     expect(html).toContain('<span class="badge">Beta</span>');
     expect(html).toContain("<strong>Ready</strong>");
+  });
+
+  it("renders cardText instead of title and description", () => {
+    const html = renderCardDocument(
+      {
+        title: "Page title",
+        description: "Page description",
+        cardText: "Custom card copy",
+      },
+      { brand: "", background: "", status: "", support: [] },
+    );
+
+    expect(html).toContain("Custom card copy");
+    expect(html).not.toContain("Page title");
+    expect(html).not.toContain("Page description");
   });
 });
 

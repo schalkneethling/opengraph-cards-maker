@@ -151,8 +151,25 @@ The helper:
 - Recursively reads files matching `extensions`.
 - Uses the file path relative to `contentDir` as the card ID.
 - Parses YAML frontmatter.
-- Requires each generated card to have `title` and `description`.
+- Requires each generated card to have `title` and `description`, unless
+  `ogCardText` provides a single card copy override.
 - Adds skipped file details to `cards.skipped`.
+
+Set `ogCardText` in frontmatter when the generated card should use copy that is
+different from the page `title` and `description`:
+
+```md
+---
+title: My page title
+description: My page meta description
+ogCardText: Custom card copy for sharing this page.
+---
+```
+
+When `ogCardText` is a non-empty string, the helper uses it as the card's
+visible text and ignores the frontmatter `title` and `description` for card
+copy. Empty or non-string values fall back to the default `title` and
+`description` behavior.
 
 Customize the adapter for any frontmatter-bearing format:
 

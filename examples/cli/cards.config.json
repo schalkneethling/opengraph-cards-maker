@@ -162,6 +162,19 @@
       }
     },
     {
+      "id": "card-text-override",
+      "eyebrow": "share.example.com",
+      "title": "Page metadata title kept for the site",
+      "description": "Page metadata description kept for search and layouts.",
+      "cardText": "Write one focused line of Open Graph card copy without changing the page title or description.",
+      "badge": "Card text",
+      "theme": {
+        "accent": "#db2777",
+        "accentBackground": "#fdf2f8",
+        "border": "#f9a8d4"
+      }
+    },
+    {
       "id": "custom-output-path",
       "outputPath": "./dist/og/custom/nested-output-card.png",
       "eyebrow": "exports.example.com",

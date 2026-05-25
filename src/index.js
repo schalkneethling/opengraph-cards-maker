@@ -142,7 +142,15 @@ function getContentId(file, contentDir) {
   return relativePath.replace(/\.[^.]+$/, "");
 }
 
+function getFrontmatterCardText(frontmatter) {
+  return typeof frontmatter.ogCardText === "string" && frontmatter.ogCardText.trim()
+    ? frontmatter.ogCardText
+    : null;
+}
+
 function defaultCardFromFrontmatter({ file, frontmatter, contentDir, options }) {
+  const cardText = getFrontmatterCardText(frontmatter);
+
   return {
     id: options.getId
       ? options.getId({ file, frontmatter, contentDir })
@@ -150,6 +158,7 @@ function defaultCardFromFrontmatter({ file, frontmatter, contentDir, options }) 
     eyebrow: options.eyebrow,
     title: frontmatter.title,
     description: frontmatter.description,
+    cardText,
     background: options.backgroundSrc
       ? {
           src: options.backgroundSrc,
@@ -179,11 +188,13 @@ export async function createCardsFromContentFiles(options) {
       continue;
     }
 
+    const cardText = getFrontmatterCardText(frontmatter);
     const baseCard = options.createCard
       ? options.createCard({ file, frontmatter, contentDir })
       : defaultCardFromFrontmatter({ file, frontmatter, contentDir, options });
+    const hasRequiredCopy = baseCard?.cardText || (baseCard?.title && baseCard.description);
 
-    if (!baseCard?.title || !baseCard.description) {
+    if (!hasRequiredCopy) {
       skipped.push({
         file,
         reason: "missing title or description",
@@ -380,6 +391,8 @@ export function renderCardDocument(card, images, size = defaultCardSize, options
   const background = images.background
     ? `<img class="background" src="${images.background}" alt="">`
     : "";
+  const title = card.cardText ?? card.title;
+  const description = card.cardText ? "" : card.description;
 
   return renderTemplate(defaultTemplate, {
     lang: escapeHTML(options.lang ?? "en"),
@@ -388,10 +401,8 @@ export function renderCardDocument(card, images, size = defaultCardSize, options
     supportColumns: String(Math.max(1, Math.min(4, images.support.length || 4))),
     background,
     brand,
-    title: escapeHTML(card.title),
-    description: card.description
-      ? `<p class="description">${escapeHTML(card.description)}</p>`
-      : "",
+    title: escapeHTML(title),
+    description: description ? `<p class="description">${escapeHTML(description)}</p>` : "",
     meta: meta ? `<div class="meta">${meta}</div>` : "",
     summary,
     support,
@@ -408,6 +419,7 @@ export function createArticleCard(input) {
     eyebrow: input.eyebrow ?? input.siteName,
     title: input.title,
     description: input.description,
+    cardText: input.cardText,
     badge: input.badge,
     meta: input.meta,
     status: input.status,

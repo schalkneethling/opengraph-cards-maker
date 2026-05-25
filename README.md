@@ -96,6 +96,20 @@ await generateOpenGraphCards({
 });
 ```
 
+To use card copy that differs from a page's `title` and `description`, set
+`ogCardText` in frontmatter:
+
+```md
+---
+title: My page title
+description: My page meta description
+ogCardText: Custom card copy for sharing this page.
+---
+```
+
+When `ogCardText` is a non-empty string, the generated card renders that text
+and ignores the frontmatter `title` and `description` for visible card copy.
+
 For cards based on a prepared background image, pass `background.src`:
 
 ```js
