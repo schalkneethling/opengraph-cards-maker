@@ -150,11 +150,15 @@ The config file uses the same option shape as the JavaScript API:
       "id": "hello-world",
       "eyebrow": "example.com",
       "title": "Hello world",
-      "description": "A short summary that appears on the generated card."
+      "description": "A short summary that appears on the generated card.",
+      "cardText": "Optional card-specific copy that overrides the visible title and description."
     }
   ]
 }
 ```
+
+Use `cardText` in JavaScript or JSON card data when the generated card should
+render copy that differs from the card's `title` and `description`.
 
 See `examples/cli/cards.config.json` for a broader sample gallery that covers
 themes, metadata, status blocks, support rows, custom output filenames and

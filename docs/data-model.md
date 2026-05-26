@@ -43,6 +43,8 @@ await generateOpenGraphCards({
 - `badge`: Small callout shown on the right side of the summary row.
 - `brand.src`: Optional logo path, HTTPS URL, or data URL.
 - `background.src`: Optional background image path, HTTPS URL, or data URL.
+- `cardText`: Optional card-specific copy that overrides the visible `title`
+  and `description`.
 - `contentAlign`: Optional content alignment for cards with a background image.
   Accepts `"full-width"`, `"align-start"`, or `"align-end"`. Defaults to
   `"full-width"`.
@@ -54,6 +56,23 @@ await generateOpenGraphCards({
 - `support`: Optional list of compact support cells.
 - `template`: Optional key for `templates`.
 - `theme`: Optional card-level color overrides.
+
+## Card Text Override
+
+Set `cardText` when JavaScript or JSON card data should use copy that differs
+from the card's `title` and `description`:
+
+```json
+{
+  "id": "my-post",
+  "title": "My page title",
+  "description": "My page meta description",
+  "cardText": "Custom card copy for sharing this page."
+}
+```
+
+When `cardText` is present, the default template renders it as the visible card
+text and does not render the normal description.
 
 ## Theme
 
