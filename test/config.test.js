@@ -15,7 +15,7 @@ describe("normalizeConfig", () => {
               title: "Card",
               outputPath: "custom/card.png",
               brand: { src: "assets/logo.svg" },
-              background: { src: "data:image/png;base64,abc" },
+              background: { src: "assets/background.png" },
               status: { icon: "icons/ok.svg" },
               support: [{ name: "Astro", icon: "https://example.com/astro.svg" }],
             },
@@ -29,7 +29,7 @@ describe("normalizeConfig", () => {
         {
           outputPath: path.join(baseDir, "custom/card.png"),
           brand: { src: path.join(baseDir, "assets/logo.svg") },
-          background: { src: "data:image/png;base64,abc" },
+          background: { src: path.join(baseDir, "assets/background.png") },
           status: { icon: path.join(baseDir, "icons/ok.svg") },
           support: [{ icon: "https://example.com/astro.svg" }],
         },

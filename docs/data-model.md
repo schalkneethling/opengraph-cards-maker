@@ -186,6 +186,7 @@ The helper:
 - Parses YAML frontmatter.
 - Requires each generated card to have `title` and `description`, unless
   `ogCardText` provides a single card copy override.
+- Maps frontmatter `background.src` to the generated card's background image.
 - Adds skipped file details to `cards.skipped`.
 
 Set `ogCardText` in frontmatter when the generated card should use copy that is
@@ -203,6 +204,22 @@ When `ogCardText` is a non-empty string, the helper uses it as the card's
 visible text and ignores the frontmatter `title` and `description` for card
 copy. Empty or non-string values fall back to the default `title` and
 `description` behavior.
+
+Set `background.src` in frontmatter when one page or post should use a specific
+prepared background image:
+
+```md
+---
+title: My page title
+description: My page meta description
+background:
+  src: src/assets/open-graph/my-page.png
+---
+```
+
+Relative image paths are resolved from the current working directory when you
+call `generateOpenGraphCards()`, matching JavaScript API card data. JSON/CLI
+configs resolve relative image paths from the config file's directory.
 
 Customize the adapter for any frontmatter-bearing format:
 
