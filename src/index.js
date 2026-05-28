@@ -20,6 +20,20 @@ export const defaultTheme = {
   border: "#d1d5db",
 };
 
+export const fontSizeCssVariables = {
+  eyebrow: "--font-size-eyebrow",
+  title: "--font-size-title",
+  description: "--font-size-description",
+  statusLabel: "--font-size-status-label",
+  statusDetail: "--font-size-status-detail",
+  badge: "--font-size-badge",
+  meta: "--font-size-meta",
+  supportName: "--font-size-support-name",
+  supportDetail: "--font-size-support-detail",
+};
+
+const fontSizeValuePattern = /^(?:\d*\.?\d+)(?:px|rem|em|%)$/;
+
 export const playwrightChromiumInstallCommand = "pnpm exec playwright install chromium";
 export const playwrightChromiumCiInstallCommand =
   "pnpm exec playwright install --with-deps chromium";
@@ -331,7 +345,58 @@ function renderSupport(support = []) {
   `;
 }
 
-function renderCssVariables(theme, size) {
+function normalizeFontSize(value, name) {
+  if (value == null || value === "") {
+    return null;
+  }
+
+  if (Number.isFinite(value) && value > 0) {
+    return `${value}px`;
+  }
+
+  if (typeof value !== "string") {
+    throw new Error(`Invalid font size for ${name}: expected a number or CSS length string.`);
+  }
+
+  const trimmed = value.trim();
+
+  // Accept only positive numeric CSS lengths for the supported units, such as 16px, .75em, 1.5rem, or 100%.
+  if (fontSizeValuePattern.test(trimmed)) {
+    return trimmed;
+  }
+
+  throw new Error(`Invalid font size for ${name}: ${value}`);
+}
+
+function isKnownFontSizeName(name) {
+  return Object.prototype.hasOwnProperty.call(fontSizeCssVariables, name);
+}
+
+function renderFontSizeCssVariable(name, value) {
+  if (!isKnownFontSizeName(name)) {
+    return null;
+  }
+
+  const normalizedValue = normalizeFontSize(value, name);
+
+  return normalizedValue ? `${fontSizeCssVariables[name]}: ${normalizedValue}` : null;
+}
+
+function renderFontSizeCssVariables(fontSizes = {}) {
+  const cssVariables = [];
+
+  for (const [name, value] of Object.entries(fontSizes)) {
+    const cssVariable = renderFontSizeCssVariable(name, value);
+
+    if (cssVariable) {
+      cssVariables.push(cssVariable);
+    }
+  }
+
+  return cssVariables;
+}
+
+function renderCssVariables(theme, size, fontSizes) {
   const resolvedTheme = {
     ...defaultTheme,
     ...theme,
@@ -346,6 +411,7 @@ function renderCssVariables(theme, size) {
     `--card-accent: ${resolvedTheme.accent}`,
     `--card-accent-background: ${resolvedTheme.accentBackground}`,
     `--card-border: ${resolvedTheme.border}`,
+    ...renderFontSizeCssVariables(fontSizes),
   ].join("; ");
 }
 
@@ -377,7 +443,10 @@ export function renderCardDocument(card, images, size = defaultCardSize, options
   }
 
   const hasBackground = Boolean(images.background);
-  const cssVariables = renderCssVariables(card.theme ?? options.theme, size);
+  const cssVariables = renderCssVariables(card.theme ?? options.theme, size, {
+    ...options.fontSizes,
+    ...card.fontSizes,
+  });
   const brand = images.brand
     ? renderImage(images.brand, "brand")
     : card.eyebrow
@@ -413,6 +482,7 @@ export function createArticleCard(input) {
   return {
     template: input.template,
     theme: input.theme,
+    fontSizes: input.fontSizes,
     contentAlign: input.contentAlign ?? input["content-align"],
     brand: input.brand,
     background: input.background,

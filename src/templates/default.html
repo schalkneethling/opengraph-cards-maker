@@ -42,6 +42,16 @@
         --typo-xl: 3.052rem;
         --typo-xxl: 3.815rem;
 
+        --font-size-eyebrow: var(--typo-default);
+        --font-size-title: var(--typo-xxl);
+        --font-size-description: var(--typo-sm);
+        --font-size-status-label: var(--typo-default);
+        --font-size-status-detail: var(--typo-default);
+        --font-size-badge: var(--typo-default);
+        --font-size-meta: var(--typo-default);
+        --font-size-support-name: var(--typo-default);
+        --font-size-support-detail: var(--typo-small);
+
         --font-xs: var(--font-body-weight) var(--typo-xs)/var(--line-height) var(--font-body-family);
         --font-small: var(--font-body-weight) var(--typo-small)/var(--line-height)
           var(--font-body-family);
@@ -141,14 +151,16 @@
 
       .eyebrow {
         color: var(--card-muted);
-        font: var(--font-default);
+        font: var(--font-body-weight) var(--font-size-eyebrow) / var(--line-height)
+          var(--font-body-family);
         font-weight: var(--font-accent-weight);
         letter-spacing: var(--letter-spacing);
         margin-block: 0 var(--spacing-lg);
       }
 
       h1 {
-        font: var(--font-xxl);
+        font: var(--font-heading-weight) var(--font-size-title) / var(--line-height-tight)
+          var(--font-heading-family);
         letter-spacing: var(--letter-spacing);
         margin: 0;
         max-inline-size: 61.25rem;
@@ -158,7 +170,8 @@
       .description {
         color: var(--card-muted);
         display: -webkit-box;
-        font: var(--font-sm);
+        font: var(--font-heading-weight) var(--font-size-description) / var(--line-height)
+          var(--font-heading-family);
         font-weight: var(--font-body-weight);
         letter-spacing: var(--letter-spacing);
         margin-block: var(--spacing-lg) 0;
@@ -201,17 +214,33 @@
 
       .status-label {
         color: var(--card-accent);
-        font: var(--font-default);
+        font: var(--font-body-weight) var(--font-size-status-label) / var(--line-height)
+          var(--font-body-family);
         font-weight: var(--font-label-weight);
         letter-spacing: var(--letter-spacing);
       }
 
-      .status-detail,
+      .status-detail {
+        color: var(--card-muted);
+        font: var(--font-body-weight) var(--font-size-status-detail) / var(--line-height)
+          var(--font-body-family);
+        letter-spacing: var(--letter-spacing);
+      }
+
       .badge,
       .meta-item {
         color: var(--card-muted);
-        font: var(--font-default);
         letter-spacing: var(--letter-spacing);
+      }
+
+      .badge {
+        font: var(--font-body-weight) var(--font-size-badge) / var(--line-height)
+          var(--font-body-family);
+      }
+
+      .meta-item {
+        font: var(--font-body-weight) var(--font-size-meta) / var(--line-height)
+          var(--font-body-family);
       }
 
       .badge,
@@ -274,7 +303,8 @@
 
       .support-name {
         overflow: hidden;
-        font: var(--font-default);
+        font: var(--font-body-weight) var(--font-size-support-name) / var(--line-height)
+          var(--font-body-family);
         font-weight: var(--font-strong-weight);
         letter-spacing: var(--letter-spacing);
         text-overflow: ellipsis;
@@ -284,7 +314,8 @@
       .support-detail {
         overflow: hidden;
         color: var(--card-muted);
-        font: var(--font-small);
+        font: var(--font-body-weight) var(--font-size-support-detail) / var(--line-height)
+          var(--font-body-family);
         letter-spacing: var(--letter-spacing);
         text-overflow: ellipsis;
         white-space: nowrap;
