@@ -163,6 +163,21 @@ function getFrontmatterCardText(frontmatter) {
     : null;
 }
 
+function getFrontmatterBackground(frontmatter, options) {
+  if (typeof frontmatter.background?.src === "string" && frontmatter.background.src.trim()) {
+    return {
+      ...frontmatter.background,
+      src: frontmatter.background.src,
+    };
+  }
+
+  return options.backgroundSrc
+    ? {
+        src: options.backgroundSrc,
+      }
+    : undefined;
+}
+
 function defaultCardFromFrontmatter({ file, frontmatter, contentDir, options }) {
   const cardText = getFrontmatterCardText(frontmatter);
 
@@ -174,11 +189,7 @@ function defaultCardFromFrontmatter({ file, frontmatter, contentDir, options }) 
     title: frontmatter.title,
     description: frontmatter.description,
     cardText,
-    background: options.backgroundSrc
-      ? {
-          src: options.backgroundSrc,
-        }
-      : undefined,
+    background: getFrontmatterBackground(frontmatter, options),
     meta: options.getMeta ? options.getMeta({ file, frontmatter, contentDir }) : [],
   };
 }

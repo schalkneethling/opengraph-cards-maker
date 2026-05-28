@@ -116,6 +116,8 @@ await generateOpenGraphCards({
 ```
 
 The helper parses YAML frontmatter and records skipped files on `cards.skipped`.
+See the [data model reference](data-model.md#from-content-files) for supported
+frontmatter fields, including per-page background image overrides.
 
 ## Layout Metadata
 

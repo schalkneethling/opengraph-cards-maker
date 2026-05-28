@@ -182,6 +182,54 @@ describe("card creation from content", () => {
       },
     ]);
   });
+
+  it("uses frontmatter background source overrides before the shared background", async () => {
+    const root = await makeTempDir();
+    await writeFile(
+      path.join(root, "specific.md"),
+      [
+        "---",
+        "title: Specific",
+        "description: Uses a page-specific background",
+        "background:",
+        "  src: src/assets/open-graph/specific.png",
+        "---",
+        "",
+      ].join("\n"),
+    );
+    await writeFile(
+      path.join(root, "shared.md"),
+      "---\ntitle: Shared\ndescription: Uses the shared background\n---\n",
+    );
+
+    const cards = await createCardsFromContentFiles({
+      contentDir: root,
+      backgroundSrc: "src/assets/open-graph/default.png",
+    });
+
+    expect([...cards]).toEqual([
+      {
+        id: "shared",
+        eyebrow: undefined,
+        title: "Shared",
+        description: "Uses the shared background",
+        cardText: null,
+        background: { src: "src/assets/open-graph/default.png" },
+        meta: [],
+      },
+      {
+        id: "specific",
+        eyebrow: undefined,
+        title: "Specific",
+        description: "Uses a page-specific background",
+        cardText: null,
+        background: {
+          src: "src/assets/open-graph/specific.png",
+        },
+        meta: [],
+      },
+    ]);
+  });
 });
 
 describe("image handling and rendering", () => {

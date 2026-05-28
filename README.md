@@ -122,6 +122,10 @@ ogCardText: Custom card copy for sharing this page.
 When `ogCardText` is a non-empty string, the generated card renders that text
 and ignores the frontmatter `title` and `description` for visible card copy.
 
+Per-page frontmatter can also override card fields such as the background image.
+See the [data model reference](docs/data-model.md#from-content-files) for the
+supported frontmatter fields and path behavior.
+
 For cards based on a prepared background image, pass `background.src`:
 
 ```js
