@@ -288,6 +288,49 @@ describe("image handling and rendering", () => {
       ),
     ).toThrow("Invalid font size for title");
   });
+
+  it("rejects zero font size overrides", () => {
+    expect(() =>
+      renderCardDocument(
+        {
+          title: "Zero sizing",
+          description: "Nope",
+          fontSizes: {
+            title: "0px",
+          },
+        },
+        { brand: "", background: "", status: "", support: [] },
+      ),
+    ).toThrow("Invalid font size for title");
+
+    expect(() =>
+      renderCardDocument(
+        {
+          title: "Zero sizing",
+          description: "Nope",
+          fontSizes: {
+            description: "0.0rem",
+          },
+        },
+        { brand: "", background: "", status: "", support: [] },
+      ),
+    ).toThrow("Invalid font size for description");
+  });
+
+  it("rejects unknown font size keys", () => {
+    expect(() =>
+      renderCardDocument(
+        {
+          title: "Unknown sizing",
+          description: "Nope",
+          fontSizes: {
+            headline: "1rem",
+          },
+        },
+        { brand: "", background: "", status: "", support: [] },
+      ),
+    ).toThrow('Unknown font size key "headline"');
+  });
 });
 
 describe("Playwright browser diagnostics", () => {

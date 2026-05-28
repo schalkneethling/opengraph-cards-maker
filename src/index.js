@@ -32,7 +32,8 @@ export const fontSizeCssVariables = {
   supportDetail: "--font-size-support-detail",
 };
 
-const fontSizeValuePattern = /^(?:\d*\.?\d+)(?:px|rem|em|%)$/;
+const fontSizeValuePattern =
+  /^(?!(?:0+(?:\.0+)?|\.(?:0)+)(?:px|rem|em|%)$)(?:\d+|\d*\.\d+)(?:px|rem|em|%)$/;
 
 export const playwrightChromiumInstallCommand = "pnpm exec playwright install chromium";
 export const playwrightChromiumCiInstallCommand =
@@ -374,7 +375,8 @@ function isKnownFontSizeName(name) {
 
 function renderFontSizeCssVariable(name, value) {
   if (!isKnownFontSizeName(name)) {
-    return null;
+    const availableKeys = Object.keys(fontSizeCssVariables).join(", ");
+    throw new Error(`Unknown font size key "${name}". Available keys: ${availableKeys}.`);
   }
 
   const normalizedValue = normalizeFontSize(value, name);
