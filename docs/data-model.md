@@ -25,6 +25,7 @@ await generateOpenGraphCards({
 - `width`: Image width. Defaults to `1200`.
 - `height`: Image height. Defaults to `630`.
 - `brandSrc`: Optional default logo path, HTTPS URL, or data URL.
+- `fontSizes`: Optional default font-size overrides for the default template.
 - `theme`: Optional colors for the default template.
 - `templates`: Optional map of template render functions.
 - `createCard`: Optional function for adapting input objects before rendering.
@@ -48,6 +49,7 @@ await generateOpenGraphCards({
   `"full-width"`.
 - `eyebrow`: Text shown above the title when no logo is used.
 - `filename`: Optional filename override.
+- `fontSizes`: Optional card-level font-size overrides for the default template.
 - `meta`: Optional list of small metadata chips.
 - `outputPath`: Optional absolute or config-relative output path.
 - `status`: Optional status box.
@@ -70,6 +72,37 @@ await generateOpenGraphCards({
 
 Themes are intentionally visual, not semantic. Projects can map their own
 statuses or categories to these colors before passing cards to the generator.
+
+## Font Sizes
+
+Use `fontSizes` when the default typography is too large or too small for a
+specific content mix. Global values apply to every card; card-level values
+override the global defaults for that card.
+
+```json
+{
+  "fontSizes": {
+    "title": 56,
+    "description": "1.5rem",
+    "statusDetail": "0.875rem"
+  }
+}
+```
+
+Supported keys are:
+
+- `eyebrow`
+- `title`
+- `description`
+- `statusLabel`
+- `statusDetail`
+- `badge`
+- `meta`
+- `supportName`
+- `supportDetail`
+
+Numeric values are rendered as pixels. CSS length strings using `px`, `rem`,
+`em`, or `%` are also accepted.
 
 ## Background Content Alignment
 

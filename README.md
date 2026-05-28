@@ -43,12 +43,19 @@ import { generateOpenGraphCards } from "opengraph-cards-maker";
 
 await generateOpenGraphCards({
   outputDir: "public/og",
+  fontSizes: {
+    title: 56,
+    description: "1.5rem",
+  },
   cards: [
     {
       id: "hello-world",
       eyebrow: "example.com",
       title: "Hello world",
       description: "A short summary that appears on the generated card.",
+      fontSizes: {
+        statusDetail: "0.875rem",
+      },
       badge: "Blog",
       status: {
         label: "Published",
@@ -60,6 +67,11 @@ await generateOpenGraphCards({
 ```
 
 This writes `public/og/hello-world.png`.
+
+Use `fontSizes` globally or on individual cards when the default typography
+does not fit the generated layout. Numeric values like `56` are rendered as
+pixels; CSS length strings such as `"1.25rem"`, `"42px"`, `"1em"`, and `"90%"`
+are also accepted.
 
 In constrained CI environments, pass Playwright launch options through
 `launchOptions`:
