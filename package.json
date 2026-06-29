@@ -57,7 +57,7 @@
     "yaml": "^2.8.1"
   },
   "devDependencies": {
-    "oxfmt": "^0.55.0",
+    "oxfmt": "^0.56.0",
     "publint": "^0.3.21",
     "vitest": "^4.0.14"
   },
